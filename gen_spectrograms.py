@@ -5,14 +5,14 @@ import os
 import sys
 
 def output_spectrogram(path):
-    command = "sox %s -n channels 1 spectrogram -z %d -r -o %s" % (path[0], path[2], path[1])
+    command = "sox %s -n channels 1 spectrogram -z %d -r -o %s %s" % (path[0], path[2], path[1], path[3])
     print ("executing %s" % command)
     subprocess.call(command, shell=True)
 
 
 if __name__ == "__main__":
     
-    if len(sys.argv) != 5:
+    if len(sys.argv) < 5:
         print ("usage: %s input_dir output_dir audio_extension z" % sys.argv[0])
         exit(1)
 
@@ -20,6 +20,10 @@ if __name__ == "__main__":
     output_dir = sys.argv[2]
     extension = sys.argv[3]
     z = int(sys.argv[4])
+    grayscale = False
+
+    if 'grayscale' in sys.argv:
+        grayscale = True
 
     if input_dir[-1] != '/':
         input_dir += '/'
@@ -46,8 +50,8 @@ if __name__ == "__main__":
         output_files.append( "%s%s.png" % (output_dir, filename) )
 
     zs = [z] * len(output_files)
-
-    work = zip(audios, output_files, zs)
+    gs = ['-m' if grayscale else ''] * len(output_files)
+    work = zip(audios, output_files, zs, gs)
 
     pool = Pool(4)
 
