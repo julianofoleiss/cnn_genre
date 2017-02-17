@@ -291,7 +291,7 @@ def main(model='mlp', num_epochs=500, meta_file="meta_jgtzan100.txt", batch_size
         labels.append(label_codes[i])
 
     labels = np.array(labels, dtype='int32')
-    print(labels)
+    #print(labels)
 
     k = 1
 
