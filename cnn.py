@@ -262,17 +262,36 @@ def main(model='mlp', num_epochs=500, meta_file="meta_jgtzan100.txt"):
         content = f.readlines()
 
     names = []
-    labels = []
+    labels_text = []
 
     for track in content:
         d = track.split("\t")
         names.append(d[0])
-        labels.append(d[1].strip())
+        labels_text.append(d[1].strip())
     
     skf = StratifiedKFold(n_splits=10)
 
     names = np.array(names)
-    labels = np.array(labels)
+    
+    label_codes = {
+        'blues': 0,
+        'classical': 1,
+        'country': 2,
+        'disco': 3,
+        'hiphop': 4,
+        'jazz': 5,
+        'metal': 6,
+        'pop': 7,
+        'reggae': 8,
+        'rock': 9
+    }
+
+    labels = []
+    for i in labels_text:
+        labels.append(label_codes[i])
+
+    labels = np.array(labels, dtype='int32')
+    print(labels)
 
     k = 1
 
@@ -285,15 +304,13 @@ def main(model='mlp', num_epochs=500, meta_file="meta_jgtzan100.txt"):
 
         print("Loaded fold %d" % (k))
 
-        k+=1
-        train_data = None
-        test_data = None
+        k+=1 
 
         for epoch in range(num_epochs):
 
             start_time = time.time()
-            train_err = train_fn(train_data, test_data)
-            err, acc = val_fn(inputs, targets)
+            train_err = train_fn(train_data, labels[train_idx])
+            err, acc = val_fn(test_data, labels[train_idx])
 
             # Then we print the results for this epoch:
             print("Epoch {} of {} took {:.3f}s".format(
@@ -301,6 +318,9 @@ def main(model='mlp', num_epochs=500, meta_file="meta_jgtzan100.txt"):
             print("  training loss:\t\t{:.6f}".format(train_err))
             print("  validation loss:\t\t{:.6f}".format(val_err))
             print("  validation accuracy:\t\t{:.2f} %".format(val_acc))
+
+        train_data = None
+        test_data = None
 
         print ("FINAL TEST SET STATS FOR FOLD %d:" % (k))
         print ("validation loss:\t\t{:.6f}".format(val_err))
