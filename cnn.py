@@ -200,7 +200,7 @@ def iterate_minibatches(inputs, targets, batchsize, shuffle=False):
 # more functions to better separate the code, but it wouldn't make it any
 # easier to read.
 
-def main(model='mlp', num_epochs=500, meta_file="meta_jgtzan100.txt"):
+def main(model='mlp', num_epochs=500, meta_file="meta_jgtzan100.txt", batch_size=50):
     # Load the dataset
     #print("Loading data...")
     #X_train, y_train, X_val, y_val, X_test, y_test = load_dataset(specgram_dir)
@@ -309,22 +309,36 @@ def main(model='mlp', num_epochs=500, meta_file="meta_jgtzan100.txt"):
         for epoch in range(num_epochs):
 
             start_time = time.time()
-            train_err = train_fn(train_data, labels[train_idx])
-            err, acc = val_fn(test_data, labels[train_idx])
+            train_err = 0
+            train_batches = 0
+
+            for batch_data, batch_labels in iterate_minibatches(train_data, labels[train_idx], batchsize=batch_size))
+                train_err += train_fn(batch_data, batch_labels)
+                train_batches+=1
+
+            val_err = 0
+            val_acc = 0
+            val_batches = 0
+
+            for batch_data, batch_labels in iterate_minibatches(test_data, labels[test_idx], batchsize=batch_size)
+                err, acc = val_fn(batch_data, batch_labels)
+                val_err+=err
+                val_acc+=acc
+                val_batches+=1
 
             # Then we print the results for this epoch:
             print("Epoch {} of {} took {:.3f}s".format(
                 epoch + 1, num_epochs, time.time() - start_time))
-            print("  training loss:\t\t{:.6f}".format(train_err))
-            print("  validation loss:\t\t{:.6f}".format(val_err))
-            print("  validation accuracy:\t\t{:.2f} %".format(val_acc))
+            print("  training loss:\t\t{:.6f}".format(train_err / train_batches))
+            print("  validation loss:\t\t{:.6f}".format(val_err / val_batches))
+            print("  validation accuracy:\t\t{:.2f} %".format(val_acc / val_batches * 100))
 
         train_data = None
         test_data = None
 
         print ("FINAL TEST SET STATS FOR FOLD %d:" % (k))
-        print ("validation loss:\t\t{:.6f}".format(val_err))
-        print ("validation accuracy:\t\t{:.2f} %".format(val_acc))
+        print ("validation loss:\t\t{:.6f}".format(val_err / val_batches))
+        print ("validation accuracy:\t\t{:.2f} %".format(val_acc / val_batches * 100))
 
     # # Finally, launch the training loop.
     # print("Starting training...")
