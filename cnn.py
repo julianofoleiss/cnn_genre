@@ -312,7 +312,7 @@ def main(model='mlp', num_epochs=500, meta_file="meta_jgtzan100.txt", batch_size
             train_err = 0
             train_batches = 0
 
-            for batch_data, batch_labels in iterate_minibatches(train_data, labels[train_idx], batchsize=batch_size))
+            for batch_data, batch_labels in iterate_minibatches(train_data, labels[train_idx], batchsize=batch_size):
                 train_err += train_fn(batch_data, batch_labels)
                 train_batches+=1
 
@@ -320,7 +320,7 @@ def main(model='mlp', num_epochs=500, meta_file="meta_jgtzan100.txt", batch_size
             val_acc = 0
             val_batches = 0
 
-            for batch_data, batch_labels in iterate_minibatches(test_data, labels[test_idx], batchsize=batch_size)
+            for batch_data, batch_labels in iterate_minibatches(test_data, labels[test_idx], batchsize=batch_size):
                 err, acc = val_fn(batch_data, batch_labels)
                 val_err+=err
                 val_acc+=acc
