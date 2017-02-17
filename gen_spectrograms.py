@@ -13,7 +13,7 @@ def output_spectrogram(path):
 if __name__ == "__main__":
     
     if len(sys.argv) < 5:
-        print ("usage: %s input_dir output_dir audio_extension z" % sys.argv[0])
+        print ("usage: %s input_dir output_dir audio_extension z [grayscale]" % sys.argv[0])
         exit(1)
 
     input_dir = sys.argv[1]
